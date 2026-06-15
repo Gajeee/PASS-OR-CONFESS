@@ -1,8 +1,9 @@
 # PASS OR CONFESS
 
-![PASS OR CONFESS Screenshot](pass.jpg)
-
-![PASS OR CONFESS Screenshot 2](pass1.jpg)
+<p align="center">
+  <img src="pass.jpeg" width="48%" alt="PASS OR CONFESS Screenshot">
+  <img src="pass1.jpeg" width="48%" alt="PASS OR CONFESS Screenshot 2">
+</p>
 
 A fast-paced social party game where players must choose between telling the truth or taking the consequences.
 
@@ -33,8 +34,6 @@ Players earn and lose points based on their decisions and group votes.
 
 Random events can completely change the game.
 
-Examples:
-
 * Double Points Round
 * Triple or Nothing
 * Score Swap
@@ -44,8 +43,6 @@ Examples:
 ### Power Cards
 
 Special abilities that players can collect and use.
-
-Examples:
 
 * Double Next Truth
 * Immunity
@@ -74,83 +71,53 @@ Designed for pass-the-phone gameplay:
 
 ## How To Play
 
-### Step 1: Create Your Game
+### 1. Create Your Game
 
-Select:
+Choose:
 
 * Number of Rounds
 * Timer Settings
 * Game Mode
 
----
-
-### Step 2: Add Players
+### 2. Add Players
 
 Add between 2 and 20 players.
 
-Each player enters their name before the game starts.
+Enter everyone's name before starting.
 
----
+### 3. Start Playing
 
-### Step 3: Start Playing
-
-The phone is passed to the active player.
+Pass the phone to the active player.
 
 Only that player should view the question.
 
----
-
-### Step 4: Make A Choice
+### 4. Choose
 
 #### Confess
 
-Answer the question honestly.
+Answer honestly.
 
-The group decides whether they believe you.
-
-* Truth = Gain Points
-* Lie = Lose Points
+The group votes on whether they believe you.
 
 #### Pass
 
-Don't want to answer?
+Skip the question and accept a penalty.
 
-Pass the question and accept a penalty.
+### 5. Survive The Chaos
 
-Possible penalties include:
+Random events and power cards can completely change the leaderboard.
 
-* Physical challenges
-* Embarrassing tasks
-* Group-selected punishments
-* Random consequences
+### 6. Win
 
----
-
-### Step 5: Survive The Chaos
-
-Special events and power cards appear throughout the game and can completely change the leaderboard.
-
-No lead is safe.
+When all rounds are complete, the player with the highest score wins.
 
 ---
 
-### Step 6: Win
-
-When all rounds are complete:
-
-* Scores are calculated
-* Statistics are updated
-* The winner is crowned
-
-Highest score wins.
-
----
-
-## Technology Used
+## Built With
 
 * HTML5
 * CSS3
-* JavaScript
+* Vanilla JavaScript
 * Local Storage API
 * Web Audio API
 
@@ -160,26 +127,11 @@ No dependencies.
 
 ---
 
-## Project Structure
-
-PASS OR CONFESS is intentionally built as a lightweight single-file application.
-
-```text
-index.html
-README.md
-pass.jpg
-pass1.jpg
-```
-
-Everything runs directly in the browser.
-
----
-
 ## Why This Project Exists
 
-Most party games either become repetitive or require downloading an app.
+PASS OR CONFESS was created to make social gatherings more fun, chaotic, and memorable using only a single phone and a browser.
 
-PASS OR CONFESS was built to create a fun social experience that works instantly in any browser while encouraging conversation, storytelling, competition, and chaos.
+It combines party games, social deduction, confessions, and competitive scoring into one experience.
 
 ---
 
@@ -187,11 +139,8 @@ PASS OR CONFESS was built to create a fun social experience that works instantly
 
 Created by Gajee Hub
 
-Portfolio:
-https://gajeee.github.io/Portfolio/
-
 ---
 
 ## License
 
-This project is available for personal, educational, and non-commercial use.
+Personal and educational use.
