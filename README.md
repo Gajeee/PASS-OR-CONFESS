@@ -1,15 +1,12 @@
 # PASS OR CONFESS
 
-<p align="center">
-  <img src="pass.jpg" width="45%" alt="PASS OR CONFESS Screenshot 1">
-  <img src="pass1.jpg" width="45%" alt="PASS OR CONFESS Screenshot 2">
-</p>
+![PASS OR CONFESS Screenshot](pass.jpg)
 
-A fast-paced social party game built entirely in HTML, CSS, and JavaScript.
+![PASS OR CONFESS Screenshot 2](pass1.jpg)
 
-Players take turns answering questions, revealing secrets, surviving chaos events, and convincing the group they're telling the truth. Every decision affects the scoreboard.
+A fast-paced social party game where players must choose between telling the truth or taking the consequences.
 
-**Truth. Pressure. Chaos.**
+Built entirely with HTML, CSS, and JavaScript, PASS OR CONFESS combines party-game chaos, social deduction, confessions, penalties, power cards, and competitive scoring into one mobile-friendly experience.
 
 ---
 
@@ -17,99 +14,85 @@ Players take turns answering questions, revealing secrets, surviving chaos event
 
 ### Multiple Question Categories
 
-* Friends
-* Deep
-* Confession
-* Spicy
-* Chaos
-
-Hundreds of prompts are included and shuffled automatically every game.
-
-### Custom Game Settings
-
-* 10, 20, 50, 100, or Endless rounds
-* Optional turn timer
-* Casual mode
-* Party mode
-* Risky mode
-* Chaos mode
+* Deep Questions
+* Confessions
+* Friends Edition
+* Spicy Questions
+* Chaos Cards
 
 ### Competitive Scoring System
 
-* Confess and convince the group = gain points
-* Lie and get caught = lose points
-* Pass a question = lose points and receive a penalty
+Players earn and lose points based on their decisions and group votes.
 
-### Random Events
+* Tell the truth and gain points
+* Get caught lying and lose points
+* Pass a question and accept a penalty
+* Build streaks for bonus rewards
 
-The game includes special surprise cards:
+### Chaos Events
 
-#### Power Cards
+Random events can completely change the game.
+
+Examples:
+
+* Double Points Round
+* Triple or Nothing
+* Score Swap
+* Reverse Rankings
+* Everyone Loses Points
+
+### Power Cards
+
+Special abilities that players can collect and use.
+
+Examples:
 
 * Double Next Truth
-* Immunity From Next Pass
+* Immunity
 * Steal Points
 * Force Another Player To Answer
 
-#### Bomb Cards
-
-* Double Points Round
-* Triple Or Nothing
-* Swap Scores
-* Reverse Scores
-* Everyone Loses Points
-
-### Streak Bonuses
-
-Build honesty streaks to earn bonus points and climb the leaderboard.
-
 ### Statistics Tracking
 
-The game stores local statistics including:
+The game automatically saves:
 
-* Games played
-* Highest score achieved
-* Longest streak
-* Most honest player
-
-Statistics are saved using Local Storage.
+* Games Played
+* Highest Score
+* Longest Streak
+* Personal Records
 
 ### Mobile Friendly
 
-Designed primarily for phones and pass-the-phone gameplay:
+Designed for pass-the-phone gameplay:
 
-* Responsive UI
-* Touch optimized
-* Smooth animations
-* Glassmorphism design
-
----
-
-# How To Play
-
-## 1. Configure The Game
-
-Choose:
-
-* Number of rounds
-* Turn timer
-* Difficulty level
+* Responsive Layout
+* Smooth Animations
+* Touch Friendly Controls
+* No Installation Required
 
 ---
 
-## 2. Add Players
+## How To Play
 
-Add between **2 and 20 players**.
+### Step 1: Create Your Game
 
-Players can:
+Select:
 
-* Be reordered
-* Be removed
-* Have custom names
+* Number of Rounds
+* Timer Settings
+* Game Mode
 
 ---
 
-## 3. Start The Match
+### Step 2: Add Players
+
+Add between 2 and 20 players.
+
+Each player enters their name before the game starts.
+
+---
+
+### Step 3: Start Playing
 
 The phone is passed to the active player.
 
@@ -117,93 +100,90 @@ Only that player should view the question.
 
 ---
 
-## 4. Choose Your Fate
+### Step 4: Make A Choice
 
-### CONFESS
+#### Confess
 
-Answer honestly.
+Answer the question honestly.
 
-The group votes:
+The group decides whether they believe you.
 
-* Truth = +2 points
-* Lie = -2 points
+* Truth = Gain Points
+* Lie = Lose Points
 
-Special cards can multiply points.
-
-### PASS
+#### Pass
 
 Don't want to answer?
 
-* Lose 1 point
-* Receive a random penalty
+Pass the question and accept a penalty.
 
-Examples:
+Possible penalties include:
 
-* Do pushups
-* Speak in an accent
-* Show your search history
-* Let the group choose a punishment
+* Physical challenges
+* Embarrassing tasks
+* Group-selected punishments
+* Random consequences
 
 ---
 
-## 5. Win The Game
+### Step 5: Survive The Chaos
 
-When all rounds are completed:
+Special events and power cards appear throughout the game and can completely change the leaderboard.
+
+No lead is safe.
+
+---
+
+### Step 6: Win
+
+When all rounds are complete:
 
 * Scores are calculated
-* Statistics are displayed
-* A winner is crowned
+* Statistics are updated
+* The winner is crowned
 
-The highest score wins.
+Highest score wins.
 
 ---
 
-# Built With
+## Technology Used
 
 * HTML5
 * CSS3
-* Vanilla JavaScript
-* Web Audio API
+* JavaScript
 * Local Storage API
+* Web Audio API
 
 No frameworks.
-No dependencies.
 No backend.
+No dependencies.
 
 ---
 
-# Project Structure
+## Project Structure
+
+PASS OR CONFESS is intentionally built as a lightweight single-file application.
 
 ```text
 index.html
-├── UI System
-├── Audio System
-├── Storage System
-├── Settings System
-├── Prompt System
-└── Game System
+README.md
+pass.jpg
+pass1.jpg
 ```
 
-Everything runs from a single file.
+Everything runs directly in the browser.
 
 ---
 
-# Why I Built This
+## Why This Project Exists
 
-PASS OR CONFESS was created as a lightweight social party game that can be played anywhere with a single phone.
+Most party games either become repetitive or require downloading an app.
 
-The goal was to combine:
-
-* Truth or Dare
-* Social deduction
-* Party game chaos
-* Competitive scoring
-
-into one fast and mobile-friendly experience.
+PASS OR CONFESS was built to create a fun social experience that works instantly in any browser while encouraging conversation, storytelling, competition, and chaos.
 
 ---
 
-# Creator
+## Creator
 
 Created by Gajee Hub
 
@@ -212,6 +192,6 @@ https://gajeee.github.io/Portfolio/
 
 ---
 
-# License
+## License
 
-This project is open-source and available for personal and educational use.
+This project is available for personal, educational, and non-commercial use.
