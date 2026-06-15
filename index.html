@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>PASS OR CONFESS</title>
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --bg-deep: #050505;
+            --bg-surface: #0f0f0f;
+            --glass-bg: rgba(20, 20, 20, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #aaaaaa;
+            --accent: #5e6ad2;
+            --danger: #ff4d4d;
+            --success: #4ade80;
+            --gold: #ffd700;
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 8px;
+            --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            user-select: none; 
+            -webkit-tap-highlight-color: transparent; 
+            -webkit-touch-callout: none;
+            touch-action: manipulation; 
+        }
+        
+        body {
+            font-family: var(--font-stack);
+            background-color: var(--bg-deep);
+            color: var(--text-primary);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background-image: radial-gradient(circle at 50% 0%, #1a1a1a 0%, #050505 60%);
+        }
+
+        /* --- TYPOGRAPHY --- */
+        h1 { font-weight: 200; font-size: 2.2rem; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 0.5rem; text-align: center; }
+        h2 { font-weight: 400; font-size: 1.5rem; letter-spacing: -0.02em; margin-bottom: 10px; }
+        p { color: var(--text-secondary); line-height: 1.4; font-size: 0.95rem; text-align: center; }
+        small { color: var(--text-secondary); font-size: 0.75rem; opacity: 0.5; }
+
+        /* --- ANIMATIONS --- */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse-red { 
+            0% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.4); } 
+            70% { box-shadow: 0 0 20px 0 rgba(255, 77, 77, 0); } 
+            100% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0); } 
+        }
+        @keyframes pop { 0% { transform: scale(0.9); opacity: 0; } 80% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+        
+        .fade-in { animation: fadeIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; opacity: 0; }
+        .urgent-mode { animation: pulse-red 1.5s infinite; border-color: rgba(255, 77, 77, 0.3) !important; }
+        .pop-in { animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+        /* --- UI COMPONENTS --- */
+        .screen {
+            flex: 1; display: flex; flex-direction: column; 
+            padding: 20px; padding-bottom: max(20px, env(safe-area-inset-bottom));
+            overflow-y: auto; position: relative; z-index: 10; 
+            max-width: 600px; width: 100%; margin: 0 auto;
+        }
+        .screen.hidden { display: none !important; }
+        
+        /* FIX: Centered content for fuller look */
+        #screen-settings, #screen-setup { justify-content: center; }
+
+        .glass-panel {
+            background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border); border-radius: var(--radius-lg);
+            padding: 15px; margin-bottom: 12px;
+        }
+
+        button {
+            border: none; outline: none; cursor: pointer; font-family: inherit;
+            transition: background-color 0.1s, opacity 0.1s;
+            width: 100%;
+        }
+        button:active { opacity: 0.7; } 
+
+        .btn-primary {
+            background: var(--text-primary); color: var(--bg-deep); font-weight: 600;
+            padding: 16px 24px; border-radius: 50px; font-size: 1rem; margin-bottom: 10px;
+        }
+        .btn-secondary {
+            background: var(--glass-bg); color: var(--text-primary); border: 1px solid var(--glass-border);
+            padding: 16px 24px; border-radius: 50px; font-size: 1rem; margin-bottom: 10px;
+        }
+        .btn-icon { background: transparent; padding: 6px; border-radius: 50%; color: var(--text-secondary); width: auto; display: inline-block;}
+        .btn-icon:hover { color: var(--text-primary); background: rgba(255,255,255,0.1); }
+
+        /* --- SETTINGS --- */
+        .setting-group { margin-bottom: 12px; } 
+        .setting-label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); margin-bottom: 6px; }
+        
+        .toggle-grid { display: grid; gap: 6px; }
+        .grid-5 { grid-template-columns: repeat(5, 1fr); }
+        .grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+        .toggle-btn {
+            background: var(--glass-bg); border: 1px solid var(--glass-border); 
+            padding: 10px 2px; 
+            border-radius: 12px; color: var(--text-secondary); font-size: 0.75rem; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .toggle-btn.active { background: rgba(255,255,255,0.15); color: var(--text-primary); border-color: var(--text-primary); }
+        .toggle-btn.danger { border-color: var(--danger); color: var(--danger); }
+        .toggle-btn.danger.active { background: var(--danger); color: white; }
+
+        /* --- PLAYER CHIPS --- */
+        .player-list { 
+            /* Fix: Set max-height so it doesn't push buttons off screen when centered */
+            max-height: 35vh; 
+            overflow-y: auto; 
+            display: flex; flex-wrap: wrap; gap: 8px; 
+            justify-content: center; 
+            margin-bottom: 20px;
+            width: 100%;
+            padding: 2px;
+            /* Add scrollbar styling */
+            -webkit-overflow-scrolling: touch;
+        }
+        /* Scrollbar for player list */
+        .player-list::-webkit-scrollbar { width: 4px; }
+        .player-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+
+        .player-chip {
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            padding: 6px 10px; border-radius: 20px; display: flex; align-items: center; gap: 6px;
+            font-size: 0.9rem; animation: fadeIn 0.3s ease;
+        }
+        .player-chip-controls { display: flex; gap: 4px; margin-left: 4px; }
+        .player-chip-controls button { font-size: 0.8rem; padding: 2px 6px; border-radius: 4px; line-height: 1; }
+
+        /* --- GAMEPLAY --- */
+        #game-hud { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .hud-item { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); background: rgba(0,0,0,0.3); padding: 6px 12px; border-radius: 20px; }
+        .streak-badge { color: var(--gold); font-weight: bold; margin-left: 5px; display: none; }
+        .streak-badge.active { display: inline; }
+
+        .timer-bar-container { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-bottom: 15px; overflow: hidden; }
+        .timer-bar { height: 100%; background: var(--text-primary); width: 100%; transition: width 1s linear, background-color 0.3s; }
+        .timer-bar.urgent { background: var(--danger); }
+
+        .prompt-card {
+            background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border); border-radius: var(--radius-lg);
+            padding: 30px 20px; 
+            min-height: 250px; 
+            max-height: 45vh;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; position: relative; margin-bottom: 20px; flex: 1;
+        }
+        .category-tag { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--text-secondary); margin-bottom: 15px; }
+        .question-text { 
+            font-size: 1.5rem; 
+            font-weight: 300; 
+            line-height: 1.4; 
+            word-wrap: break-word; 
+            color: #ffffff !important; 
+        }
+        .countdown-overlay {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 8rem; font-weight: 800; color: rgba(255, 77, 77, 0.1); pointer-events: none;
+            display: none; z-index: 0; width: 100%; text-align: center;
+        }
+        .prompt-card.urgent .countdown-overlay { display: block; }
+        .card-content { position: relative; z-index: 1; width: 100%; }
+
+        .game-actions { 
+            display: flex; gap: 12px; 
+            margin-top: auto; 
+            padding-bottom: max(30px, env(safe-area-inset-bottom)); 
+        }
+        .btn-action { flex: 1; height: 60px; border-radius: var(--radius-md); font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+        .btn-pass { background: rgba(255,255,255,0.05); color: var(--text-primary); border: 1px solid var(--glass-border); }
+        .btn-confess { background: var(--text-primary); color: var(--bg-deep); box-shadow: 0 4px 20px rgba(255,255,255,0.15); }
+
+        /* --- OVERLAYS & MODALS --- */
+        .overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(20px);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 100; padding: 30px; text-align: center;
+            touch-action: auto;
+        }
+        .overlay.hidden { display: none !important; }
+
+        .modal-card {
+            background: var(--bg-surface); border: 1px solid var(--glass-border);
+            padding: 30px; border-radius: var(--radius-lg); max-width: 380px; width: 100%;
+            animation: pop 0.3s ease-out;
+        }
+
+        /* --- WINNER & STATS --- */
+        .podium { width: 100%; margin-top: 15px; max-height: 40vh; overflow-y: auto; }
+        .podium-row { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 12px 24px; 
+            border-bottom: 1px solid var(--glass-border); 
+        }
+        .podium-row:last-child { border-bottom: none; }
+        .rank-icon { font-size: 1.2rem; width: 40px; text-align: left; }
+        .player-name { flex: 1; text-align: left; padding-left: 15px; font-weight: 500; font-size: 0.95rem; }
+        .player-score { font-weight: 700; color: var(--text-primary); min-width: 40px; text-align: right; }
+
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .stat-box { background: var(--glass-bg); padding: 12px; border-radius: var(--radius-sm); text-align: center; }
+        .stat-val { display: block; font-size: 1.2rem; font-weight: 700; color: var(--text-primary); }
+        .stat-label { font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; }
+
+        /* --- SCROLLABLE SCOREBOARD --- */
+        .scoreboard-scroll { max-height: 250px; overflow-y: auto; width: 100%; margin-top: 10px; }
+        .scoreboard-scroll::-webkit-scrollbar { width: 4px; }
+        .scoreboard-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+
+        /* --- CUSTOM OVERRIDES --- */
+        #overlay-turn .btn-primary {
+            max-width: 200px;
+            margin: 20px auto 0;
+            padding: 12px 30px;
+            font-size: 0.9rem;
+        }
+        
+        #next-player-name { color: var(--gold); font-weight: 600; }
+
+        .footer-link {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            opacity: 0.5;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            display: inline-block; 
+            padding: 10px;
+        }
+        .footer-link:active { opacity: 1; color: var(--text-primary); }
+    </style>
+</head>
+<body>
+
+    <!-- === SCREEN: START === -->
+    <section id="screen-start" class="screen">
+        <div style="margin: auto; text-align: center; width: 100%;">
+            <h1 class="fade-in">PASS OR<br>CONFESS</h1>
+            <p class="fade-in" style="margin-bottom: 40px; opacity: 0.7;">Truth. Pressure. Chaos.</p>
+            <button class="btn-primary fade-in" onclick="GameSystem.goToSettings()">Play Game</button>
+            <button class="btn-secondary fade-in" onclick="UISystem.toggleHowToPlay()">How to Play</button>
+        </div>
+        <div style="margin-top: auto; text-align: center;">
+            <a href="https://gajeee.github.io/Portfolio/" target="_blank" class="footer-link">Made by Gajee Hub</a>
+        </div>
+    </section>
+
+    <!-- === OVERLAY: HOW TO PLAY === -->
+    <div id="overlay-howtoplay" class="overlay hidden">
+        <div class="modal-card" style="text-align: left;">
+            <h2 style="text-align: center; color: var(--accent);">How To Play</h2>
+            <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 15px;">
+                <div>
+                    <strong style="color: var(--text-primary);">1. The Setup</strong>
+                    <p style="text-align: left; font-size: 0.85rem;">Add players, set the timer, and pick a difficulty.</p>
+                </div>
+                <div>
+                    <strong style="color: var(--text-primary);">2. Your Turn</strong>
+                    <p style="text-align: left; font-size: 0.85rem;">Read the card. You have two choices.</p>
+                </div>
+                <div style="padding-left: 10px; border-left: 2px solid var(--glass-border);">
+                    <strong style="color: var(--success);">Confess:</strong>
+                    <p style="text-align: left; font-size: 0.8rem;">Answer the question truthfully. The group votes. If they believe you, +2 Points. If not, -2 Points.</p>
+                </div>
+                <div style="padding-left: 10px; border-left: 2px solid var(--glass-border);">
+                    <strong style="color: var(--danger);">Pass:</strong>
+                    <p style="text-align: left; font-size: 0.8rem;">Don't want to answer? You lose 1 Point and must do a random penalty.</p>
+                </div>
+                <div>
+                    <strong style="color: var(--text-primary);">3. Winning</strong>
+                    <p style="text-align: left; font-size: 0.85rem;">The game ends when rounds run out. Highest score wins!</p>
+                </div>
+            </div>
+            <button class="btn-primary" style="margin-top: 25px;" onclick="UISystem.toggleHowToPlay()">Got it</button>
+        </div>
+    </div>
+
+    <!-- === SCREEN: SETTINGS === -->
+    <section id="screen-settings" class="screen hidden">
+        <h2 style="margin-bottom: 20px;">Game Settings</h2>
+        
+        <div class="setting-group">
+            <span class="setting-label">Game Length</span>
+            <div class="toggle-grid grid-5" id="settings-length">
+                <button class="toggle-btn" onclick="SettingsSystem.setLength(10, this)">10</button>
+                <button class="toggle-btn active" onclick="SettingsSystem.setLength(20, this)">20</button>
+                <button class="toggle-btn" onclick="SettingsSystem.setLength(50, this)">50</button>
+                <button class="toggle-btn" onclick="SettingsSystem.setLength(100, this)">100</button>
+                <button class="toggle-btn" onclick="SettingsSystem.setLength(9999, this)">Endless</button>
+            </div>
+        </div>
+
+        <div class="setting-group">
+            <span class="setting-label">Turn Timer</span>
+            <div class="toggle-grid grid-5" id="settings-timer">
+                <button class="toggle-btn active" onclick="SettingsSystem.setTimer(0, this)">Off</button>
+                <button class="toggle-btn" onclick="SettingsSystem.setTimer(10, this)">10s</button>
+                <button class="toggle-btn" onclick="SettingsSystem.setTimer(15, this)">15s</button>
+                <button class="toggle-btn" onclick="SettingsSystem.setTimer(20, this)">20s</button>
+                <button class="toggle-btn" onclick="SettingsSystem.setTimer(30, this)">30s</button>
+            </div>
+        </div>
+
+        <div class="setting-group">
+            <span class="setting-label">Difficulty</span>
+            <div class="toggle-grid grid-4" id="settings-diff">
+                <button class="toggle-btn active" onclick="SettingsSystem.setDiff('Casual', this)">Casual</button>
+                <button class="toggle-btn" onclick="SettingsSystem.setDiff('Party', this)">Party</button>
+                <button class="toggle-btn" onclick="SettingsSystem.setDiff('Risky', this)">Risky</button>
+                <button class="toggle-btn danger" onclick="SettingsSystem.setDiff('Chaos', this)">Chaos</button>
+            </div>
+        </div>
+
+        <button class="btn-primary" onclick="GameSystem.goToPlayerSetup()">Next: Players</button>
+        <button class="btn-secondary" onclick="GameSystem.goToStart()">Back</button>
+    </section>
+
+    <!-- === SCREEN: PLAYER SETUP === -->
+    <section id="screen-setup" class="screen hidden">
+        <h2 style="text-align: center; margin-bottom: 5px;">Who's Playing?</h2>
+        <p style="margin-bottom: 15px;">2-20 Players</p>
+        
+        <div style="display: flex; gap: 10px; margin-bottom: 20px; width: 100%;">
+            <input type="text" id="input-player-name" placeholder="Enter name..." maxlength="12" style="flex:1; padding: 12px; background:var(--glass-bg); border:1px solid var(--glass-border); color:white; border-radius:12px; font-size: 1rem;">
+            <button class="btn-primary" style="width: auto; margin:0; padding: 12px;" onclick="GameSystem.addPlayer()">Add</button>
+        </div>
+
+        <div id="player-list-container" class="player-list">
+            <!-- Player chips injected here -->
+        </div>
+
+        <button id="btn-start-match" class="btn-primary" onclick="GameSystem.startMatch()" disabled>Start Match</button>
+        <button class="btn-secondary" onclick="GameSystem.goToSettings()">Back</button>
+    </section>
+
+    <!-- === SCREEN: GAMEPLAY === -->
+    <section id="screen-game" class="screen hidden">
+        <div id="game-hud">
+            <div class="hud-item" onclick="UISystem.toggleScoreboard()" style="cursor: pointer;">🏆 Scores</div>
+            <div class="hud-item">Round <span id="round-counter">1</span>/<span id="total-rounds">20</span></div>
+        </div>
+
+        <div id="streak-hud" style="text-align: center; margin-bottom: 5px;">
+            <span class="streak-badge" id="streak-display">🔥 0</span>
+        </div>
+
+        <!-- SCOREBOARD OVERLAY -->
+        <div id="overlay-scoreboard" class="overlay hidden" style="justify-content: flex-start; padding-top: 60px;">
+            <h2 style="margin-bottom: 10px;">Scores</h2>
+            <div id="scoreboard-list" class="scoreboard-scroll glass-panel"></div>
+            <button class="btn-primary" onclick="UISystem.toggleScoreboard()" style="margin-top: 20px;">Close</button>
+        </div>
+
+        <div class="timer-bar-container">
+            <div id="timer-bar" class="timer-bar"></div>
+        </div>
+
+        <div id="prompt-card" class="prompt-card">
+            <div class="countdown-overlay" id="countdown-number">5</div>
+            <div class="card-content">
+                <div id="card-category" class="category-tag">Friends</div>
+                <div id="card-text" class="question-text">Loading prompt...</div>
+            </div>
+        </div>
+
+        <div class="game-actions">
+            <button class="btn-action btn-pass" onclick="GameSystem.actionPass()">Pass</button>
+            <button class="btn-action btn-confess" onclick="GameSystem.actionConfess()">Confess</button>
+        </div>
+    </section>
+
+    <!-- === OVERLAYS === -->
+    
+    <!-- Turn Interstitial -->
+    <div id="overlay-turn" class="overlay hidden">
+        <h2>Pass the Phone</h2>
+        <div style="font-size: 1.4rem; margin: 20px 0; color: var(--text-primary); font-weight: 300;">
+            To <strong id="next-player-name">Name</strong>
+        </div>
+        <button class="btn-primary" onclick="GameSystem.startTurn()">I'm Ready</button>
+    </div>
+
+    <!-- Vote Modal -->
+    <div id="overlay-vote" class="overlay hidden">
+        <div class="modal-card">
+            <h2>Group Vote</h2>
+            <p>Did they tell the truth?</p>
+            <div style="display: flex; gap: 15px; margin-top: 25px;">
+                <button class="btn-secondary" style="border-color: var(--danger); color: var(--danger);" onclick="GameSystem.resolveTruth(false)">Lie (-2)</button>
+                <button class="btn-primary" onclick="GameSystem.resolveTruth(true)">Truth (+2)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Penalty Modal -->
+    <div id="overlay-penalty" class="overlay hidden">
+        <div class="modal-card">
+            <h2 style="color: var(--danger);">PENALTY</h2>
+            <p id="penalty-text">Do 10 pushups.</p>
+            <p style="margin-top: 5px; font-size: 0.8rem; opacity: 0.6;">Score -1</p>
+            <button class="btn-primary" style="margin-top: 20px;" onclick="GameSystem.finishTurn()">Continue</button>
+        </div>
+    </div>
+
+    <!-- Power Card Modal -->
+    <div id="overlay-power" class="overlay hidden">
+        <div class="modal-card" style="border-color: var(--gold);">
+            <h2 style="color: var(--gold);">⚡ POWER CARD</h2>
+            <p id="power-text" style="font-size: 1.2rem; margin: 20px 0; color: var(--text-primary);">Effect...</p>
+            <button class="btn-primary" onclick="UISystem.closeModal('overlay-power')">Activate</button>
+        </div>
+    </div>
+
+    <!-- Bomb Card Modal -->
+    <div id="overlay-bomb" class="overlay hidden">
+        <div class="modal-card" style="border-color: var(--danger); background: #1a0505;">
+            <h2 style="color: var(--danger);">💣 BOMB CARD</h2>
+            <p id="bomb-text" style="font-size: 1.2rem; margin: 20px 0; color: var(--text-primary);">Event...</p>
+            <button class="btn-primary" style="background: var(--danger); color: white;" onclick="GameSystem.acceptBomb()">BOOM</button>
+        </div>
+    </div>
+
+    <!-- Streak Modal -->
+    <div id="overlay-streak" class="overlay hidden">
+        <div class="modal-card" style="text-align: center;">
+            <h1 id="streak-title" style="color: var(--gold);">STREAK!</h1>
+            <p id="streak-desc" style="font-size: 1.2rem; margin: 10px 0;">Bonus Points!</p>
+            <button class="btn-primary" onclick="UISystem.closeModal('overlay-streak')">Nice</button>
+        </div>
+    </div>
+
+    <!-- Winner Screen -->
+    <section id="screen-winner" class="screen hidden">
+        <h1 class="fade-in" style="font-size: 2rem; margin-bottom: 10px;">GAME OVER</h1>
+        
+        <div class="glass-panel fade-in" style="text-align: center; border-color: var(--gold);">
+            <p style="color: var(--gold); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em;">Winner</p>
+            <h2 id="winner-name" style="font-size: 1.8rem; margin: 5px 0;">Name</h2>
+        </div>
+
+        <div class="stats-grid fade-in">
+            <div class="stat-box">
+                <span class="stat-val" id="end-score">0</span>
+                <span class="stat-label">Score</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-val" id="end-streak">0</span>
+                <span class="stat-label">Streak</span>
+            </div>
+        </div>
+
+        <div class="glass-panel fade-in" style="margin-top: 20px; padding: 0 0 10px 0;">
+            <div class="podium" id="podium-list"></div>
+        </div>
+
+        <button class="btn-primary fade-in" style="margin-top: 25px;" onclick="GameSystem.rematch()">Rematch</button>
+        <button class="btn-secondary fade-in" onclick="GameSystem.goToSettings()">Settings</button>
+    </section>
+
+    <!-- Global Stats Screen -->
+    <section id="screen-stats" class="screen hidden">
+        <h2>Global Statistics</h2>
+        <div class="glass-panel" id="global-stats-content" style="margin-top: 20px;">
+            <p style="text-align: center; opacity: 0.5;">No games played yet.</p>
+        </div>
+        <button class="btn-secondary" style="margin-top: 20px;" onclick="GameSystem.goToStart()">Back</button>
+    </section>
+
+    <script>
+        /* ==========================================================================
+           AUDIO SYSTEM
+           ========================================================================== */
+        const AudioSystem = {
+            ctx: null,
+            init: function() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            },
+            playTone: function(freq, type, duration, vol = 0.1) {
+                if (!this.ctx || !SettingsSystem.data.sound) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + duration);
+            },
+            click: () => AudioSystem.playTone(400, 'sine', 0.1),
+            tick: () => AudioSystem.playTone(600, 'sine', 0.05),
+            start: () => {
+                AudioSystem.playTone(300, 'triangle', 0.1);
+                setTimeout(() => AudioSystem.playTone(500, 'triangle', 0.2), 100);
+            },
+            success: () => {
+                AudioSystem.playTone(500, 'sine', 0.1);
+                setTimeout(() => AudioSystem.playTone(800, 'sine', 0.2), 100);
+            },
+            fail: () => AudioSystem.playTone(200, 'sawtooth', 0.3),
+            alarm: () => {
+                AudioSystem.playTone(150, 'square', 0.4);
+                setTimeout(() => AudioSystem.playTone(100, 'square', 0.4), 150);
+            }
+        };
+
+        /* ==========================================================================
+           STORAGE SYSTEM
+           ========================================================================== */
+        const StorageSystem = {
+            key: 'POC_V3_STATS',
+            get: function() {
+                const d = localStorage.getItem(this.key);
+                return d ? JSON.parse(d) : { games: 0, totalScore: 0, mostHonest: '-', biggestLiar: '-', longestStreak: 0 };
+            },
+            update: function(stats) {
+                const current = this.get();
+                current.games++;
+                if (stats.highScore > current.totalScore) current.totalScore = stats.highScore;
+                if (stats.bestStreak > current.longestStreak) current.longestStreak = stats.bestStreak;
+                current.mostHonest = stats.mostHonest;
+                current.biggestLiar = stats.biggestLiar;
+                localStorage.setItem(this.key, JSON.stringify(current));
+            }
+        };
+
+        /* ==========================================================================
+           PROMPT SYSTEM
+           ========================================================================== */
+        const PromptSystem = {
+            database: {
+                FRIENDS: [
+                    "Who here would survive the longest without their phone?", "Who here is secretly the most dramatic?", "Who would become famous first?", "Who is most likely to start a business?", "Who would get arrested for something stupid?", "Who would survive a horror movie?", "Who would be the best roommate?", "Who would forget your birthday?", "Who is secretly the funniest?", "Who would win a reality show?", "Who is most likely to get lost?", "Who talks the most?", "Who would spend RM10,000 the fastest?", "Who gives the worst advice?", "Who would become a millionaire?", "Who would be the best parent?", "Who would fake being sick to skip work?", "Who would last longest on a deserted island?", "Who is the biggest overthinker?", "Who is secretly the smartest?", "Who here would accidentally become TikTok famous?", "Who here spends the most time stalking Instagram stories?", "Who here would get caught sneaking out first?", "Who here would survive being canceled online?", "Who here would accidentally start a fire?", "Who here would fail first in a zombie apocalypse?", "Who here would survive a haunted house the worst?", "Who here would get exposed first in a group chat leak?", "Who here would be the worst influencer?", "Who here would survive a survival show the longest?", "Who here would become rich and then immediately waste all the money?", "Who is most likely to text their ex?", "Who here would survive the least amount of time in the wilderness?", "Who here is most likely to get caught lying?", "Who here is secretly the most competitive?", "Who here would accidentally go viral?", "If you were arrested tomorrow, what would your friends assume you did?", "Who here would be the worst secret agent?", "Who here would accidentally start a cult?", "Who here would survive a horror movie until the very end?", "Who here would get kicked out of a reality show first?", "Who here would survive the least amount of time without Wi-Fi?", "Who here would accidentally reveal the group secret?", "Who here would become famous for something stupid?", "Who here is secretly an NPC?", "Who here is most likely to become a conspiracy theorist?", "Who here would accidentally start drama without realizing it?", "Who here would spend an entire day arguing online?", "Who here would survive a school lockdown simulation?", "Who here would accidentally send a screenshot to the person being screenshotted?", "Who here would accidentally join a cult?", "Who here would get lost in their own neighborhood?", "Who here is most likely to leak a secret?", "Who here would become a supervillain first?", "Who here would accidentally expose themselves on live stream?", "Who here would get catfished first?", "Give everyone a movie title based on their personality.", "Who here would win a reality dating show?", "Who here would accidentally start a fire?", "Who here is secretly the biggest attention seeker?", "Who here would accidentally go viral?", "Who here would be the worst influencer?", "If everyone here had one superpower, who would accidentally become a villain first?", "Who here would accidentally reveal the group secret?", "Who here is secretly an NPC?", "Who here would survive a horror movie until the very end?", "Who here would get kicked out of a reality show first?", "Who here would accidentally expose themselves on live stream?", "Who here would get catfished first?", "Who here would accidentally start a fire?", "Who here would survive a school lockdown simulation?", "Who here would accidentally go viral?", "Who here would get exposed first in a group chat leak?", "Who here would survive being canceled online?", "Who here would accidentally send a screenshot to the person being screenshotted?", "Who here would get caught sneaking out first?", "Who here would accidentally start a cult?", "Who here would get lost in their own neighborhood?", "Who here would accidentally become TikTok famous?", "Who here is most likely to text their ex?", "Who here is most likely to leak a secret?", "Who here would become a supervillain first?", "Who here would spend RM500 on something completely useless?", "Who here would accidentally start drama without realizing it?", "Who here would be the worst secret agent?", "Who here would survive the least amount of time without Wi-Fi?", "Who here would accidentally start a cult?", "Who here would accidentally join a cult?", "Who here is most likely to become a conspiracy theorist?", "Who here would get catfished first?", "Who here would accidentally start a fire?", "Who here would fail first in a zombie apocalypse?", "Who here would survive a haunted house the worst?", "Who here would become famous for something stupid?", "Who here would be the worst influencer?", "Who here would accidentally go viral?", "Who here would accidentally reveal the group secret?", "Who here would accidentally expose themselves on live stream?", "Who here would accidentally send a screenshot to the person being screenshotted?", "Who here would accidentally start a cult?", "Who here would get lost in their own neighborhood?", "Who here would survive the least amount of time in the wilderness?", "Who here is most likely to get caught lying?", "Who here is secretly the most competitive?", "Who here would accidentally join a cult?", "Who here would get lost in their own neighborhood?", "Who here would accidentally start a fire?", "Who here would get catfished first?", "Who here would accidentally expose themselves on live stream?", "Who here would be the worst influencer?", "Who here would accidentally go viral?", "Who here would accidentally reveal the group secret?", "Who here would accidentally start a cult?", "Who here would accidentally start a fire?", "Who here would get catfished first?", "Who here would accidentally expose themselves on live stream?", "Who here would get lost in their own neighborhood?", "Who here would accidentally start a cult?"
+ ],
+                DEEP: [
+                    "What fear controls you the most?", "What memory changed your life?", "What is your biggest regret?", "What is your biggest insecurity?", "What is something you're still healing from?", "When was the last time you cried?", "What do you wish people understood about you?", "What do you hide from most people?", "What lesson took you years to learn?", "What is your biggest goal?", "What are you afraid of losing?", "What motivates you every day?", "What would your younger self think of you?", "What do you wish you started earlier?", "What are you most proud of?", "What keeps you awake at night?", "Who impacted your life most?", "What mistake taught you the most?", "What is your biggest dream?", "What do you want to be remembered for?", "What is the hardest thing you've ever had to do?", "What is the happiest moment of your life?", "What is the saddest moment of your life?", "What is the most scared you've ever been?", "What is the angriest you've ever been?", "What is the most disappointed you've ever been?", "What is the most surprised you've ever been?", "What is the most confused you've ever been?", "What is the most excited you've ever been?", "What is the most proud you've ever been?", "What is the most ashamed you've ever been?", "What is the most guilty you've ever been?", "What is the most grateful you've ever been?", "What is the most hopeful you've ever been?", "What is the most loved you've ever felt?", "What is the most hated you've ever felt?", "What is the most lonely you've ever felt?", "What is the most connected you've ever felt?", "What is the most peaceful you've ever felt?", "What is the most joyful you've ever felt?", "What is the most content you've ever felt?", "What is the most anxious you've ever felt?", "What is the most stressed you've ever been?", "What is the most overwhelmed you've ever been?", "What is the most bored you've ever felt?", "What is the most curious you've ever felt?", "What is the most amazed you've ever felt?", "What is the most awestruck you've ever felt?", "What is the most inspired you've ever felt?", "What is the most creative you've ever felt?", "What is the most productive you've ever felt?", "What is the most successful you've ever felt?", "What is the most accomplished you've ever felt?", "What is the most fulfilled you've ever felt?", "What is the most satisfied you've ever felt?", "What is the most happy you've ever felt?", "What is the most sad you've ever felt?", "What is the most angry you've ever felt?", "What is the most afraid you've ever felt?", "What is the most disgusted you've ever felt?", "What is the most surprised you've ever been?", "What is the most anticipant you've ever been?", "What is the most trusting you've ever felt?", "What is the most joyful you've ever felt?", "What is the most loving you've ever felt?", "What is the most optimistic you've ever felt?", "What is the most pessimistic you've ever felt?", "What is the most realistic you've ever felt?", "What is the most idealistic you've ever felt?", "What is the most materialistic you've ever felt?", "What is the most spiritual you've ever felt?", "What is the most religious you've ever felt?", "What is the most philosophical you've ever felt?", "What is the most scientific you've ever felt?", "What is the most artistic you've ever felt?", "What is the most musical you've ever felt?", "What is the most literary you've ever felt?", "What is the most historical you've ever felt?", "What is the most mathematical you've ever felt?", "What is the most logical you've ever felt?", "What is the most illogical you've ever felt?", "What is the most rational you've ever felt?", "What is the most irrational you've ever felt?", "What is the most sensible you've ever felt?", "What is the most nonsensical you've ever felt?", "What is the most practical you've ever felt?", "What is the most impractical you've ever felt?", "What is the most useful you've ever felt?", "What is the most useless you've ever felt?", "What is the most beneficial you've ever felt?", "What is the most harmful you've ever felt?", "What is the most helpful you've ever felt?", "What is the most unhelpful you've ever felt?", "What's your most irrational fear?", "If your life had a warning label, what would it say?", "What's one thing you're hoping nobody asks you tonight?", "What's something you're afraid people would think differently of you for if they knew?", "What's a version of yourself you're secretly glad doesn't exist anymore?", "What's something you've never forgiven yourself for?", "What's a compliment you still remember years later?", "What's something you're pretending doesn't bother you?", "If someone read your thoughts for one day, what would embarrass you most?", "When was the last time you felt truly understood?", "What's a conversation you wish you could have one more time?", "What's the biggest lie you tell yourself?", "What's something you've lost that you still think about?", "What part of your personality do you hide the most?", "What's something you're scared to admit you want?", "What's a memory that randomly keeps you awake at night?", "What's something you're still waiting for an apology for?", "What's a mistake that changed your life?", "What's something you wish you could tell your younger self?", "What's something you wish people noticed about you?", "What's the loneliest you've ever felt?", "What's a fear you've never told anyone?", "What do you think people misunderstand about you most?", "Have you ever pushed someone away who cared about you?", "What's something you're trying to prove, and to whom?", "What's a secret insecurity you think nobody notices?", "What's something you miss that you can never get back?", "What's one thing you'd change about your personality if you could?", "What's something you've never said out loud because it sounds ridiculous?", "What scares you more: failing or succeeding?", "What's something you secretly envy about someone else?", "What's a memory that hurts more than you'd admit?", "What's something you've done that nobody here would expect?", "What's the closest you've come to completely changing your life?", "What's something you're ashamed of caring about?", "Have you ever felt like you were pretending to be yourself?", "What's something you've always wanted to ask someone but never did?", "What's your biggest emotional weakness?", "What's something you wish people would stop asking you about?", "What's a truth you've been avoiding?", "What's something you wish you could forget?", "What's a promise you broke that still bothers you?", "What's something you're terrified of losing?", "What's the most selfish thing you've ever done?", "What's a thought you have that you'd never post online?", "What's something you've done that still makes you cringe years later?", "What's something you've never fully gotten over?", "What's a dream you've quietly given up on?", "What's something you wish you could say to someone right now?", "What version of yourself are you trying to become?", "What's something you're afraid will never happen for you?", "What's the hardest truth you've learned recently?"
+                ],
+                CONFESSION: [
+                    "Have you ever lied to get out of trouble?", "Have you ever pretended to be sick?", "Have you ever blamed someone else?", "Have you ever stalked someone's profile?", "Have you ever ghosted someone?", "Have you ever kept a secret from your best friend?", "Have you ever broken something and not admitted it?", "Have you ever pretended to like a gift?", "Have you ever lied about your age?", "Have you ever read someone's messages?", "Have you ever cheated in a game?", "Have you ever exaggerated a story?", "Have you ever broken a promise?", "Have you ever ignored someone's text on purpose?", "Have you ever talked behind someone's back?", "Have you ever faked confidence?", "Have you ever stolen food from someone?", "Have you ever laughed at the wrong moment?", "Have you ever lied to impress someone?", "Have you ever regretted sending a message?", "Have you ever pretended not to see someone?", "Have you ever lied on your resume?", "Have you ever lied to your parents about where you were?", "Have you ever faked being busy?", "Have you ever taken credit for someone else's work?", "Have you ever blamed technology for not replying?", "Have you ever pretended to like a song everyone else liked?", "Have you ever lied about watching a movie?", "Have you ever pretended to understand a joke?", "Have you ever lied about your hobbies?", "Have you ever exaggerated your skills?", "Have you ever pretended to be interested in a conversation?", "Have you ever lied to get a discount?", "Have you ever pretended to lose something?", "Have you ever blamed a pet?", "Have you ever lied about your feelings?", "Have you ever pretended to be happy when you weren't?", "Have you ever faked being sick to get out of a date?", "Have you ever lied about your age to get into a club?", "Have you ever pretended to be someone else online?", "Have you ever lied about your relationship status?", "Have you ever pretended to like a gift you hated?", "Have you ever lied about your income?", "Have you ever pretended to know a celebrity?", "Have you ever lied about where you got something?", "Have you ever pretended to be busy to avoid plans?", "Have you ever lied about why you were late?", "Have you ever blamed traffic when you just overslept?", "Have you ever lied about reading a book?", "Have you ever pretended to watch a TV show?", "Have you ever lied about your diet?", "Have you ever pretended to like someone's cooking?", "Have you ever lied about your weekend plans?", "Have you ever pretended to be working when you weren't?", "Have you ever lied about having plans to avoid going out?", "Have you ever blamed the alarm clock?", "Have you ever lied about losing your phone?", "Have you ever pretended to be asleep?", "Have you ever lied about being tired?", "Have you ever pretended to be drunk?", "Have you ever lied about being sober?", "Have you ever pretended to like a band?", "Have you ever lied about going to the gym?", "Have you ever pretended to be on a diet?", "Have you ever lied about your allergies?", "Have you ever pretended to be allergic to something you don't like?", "Have you ever lied about your political views?", "Have you ever pretended to agree with someone?", "Have you ever lied about your religious beliefs?", "Have you ever pretended to be more spiritual than you are?", "Have you ever lied about your moral compass?", "Have you ever pretended to have a guilty conscience?", "Have you ever lied about your dreams?", "Have you ever pretended to have a nightmare?", "Have you ever lied about your childhood?", "Have you ever pretended to have a different past?", "Have you ever lied about your family?", "Have you ever pretended to be an only child?", "Have you ever lied about your siblings?", "Have you ever pretended to be an orphan?", "Have you ever lied about your heritage?", "Have you ever pretended to be from a different country?", "Have you ever lied about your accent?", "Have you ever pretended to speak a language?", "Have you ever lied about your education?", "Have you ever pretended to have a degree?", "Have you ever lied about your job?", "Have you ever pretended to be unemployed?", "Have you ever lied about your income?", "Have you ever pretended to be rich?", "Have you ever lied about being poor?", "Have you ever pretended to be homeless?", "Have you ever lied about your living situation?", "Have you ever pretended to live alone?", "Have you ever lied about your roommates?", "Have you ever pretended to have a pet?", "Have you ever lied about your allergies?", "Have you ever pretended to be sick?", "Have you ever lied about your injuries?", "Have you ever pretended to be in pain?", "Have you ever lied about your mental health?", "Have you ever pretended to be happy?", "Have you ever lied about being sad?", "Who is most likely to reply 'lol' when they're actually upset?", "What's your biggest 'I thought nobody saw that' moment?", "What's the dumbest thing you've done because your friends convinced you?", "Have you ever practiced an argument in your head and then never used it?", "Have you ever changed your personality to impress someone?", "What's the funniest lie you've ever told?", "What's the most embarrassing thing you've done for attention?", "What's the weirdest thing you've eaten?", "What's the most random thing in your room?", "What's your worst accidental text?", "Tell the group your worst fashion phase.", "What's the weirdest thing you've done when nobody was watching?", "What's the funniest punishment you've ever received?", "What's your biggest 'that wasn't supposed to happen' moment?", "What's the most awkward thing you've said to a teacher?", "What's your most embarrassing gaming rage moment?", "What's your most dramatic overreaction?", "What's the weirdest thing you've done when bored?", "What's your most embarrassing autocorrect fail?", "What's your biggest social media regret?", "What's the most embarrassing thing in your camera roll?", "What's the weirdest thing you've searched at 2 AM?", "What's your biggest 'main character syndrome' moment?", "Have you ever laughed in a serious situation and couldn't stop?", "What's the most ridiculous excuse you've used?", "What's your most irrational fear?", "What's the weirdest rumor you've heard about yourself?", "Have you ever pretended to know something you had no clue about?", "What's the cringiest phase you've ever gone through?", "What's the longest you've ignored a message on purpose?", "What's the weirdest thing you've done when bored?", "Have you ever deleted a post because nobody liked it?", "What's something you pretend not to care about but actually do?", "What's your most useless talent?", "What's the funniest lie you've ever told?", "If your friends roasted you for one thing forever, what would it be?", "What's something you've done that looked cool in your head but wasn't?", "What's your most embarrassing voice crack moment?", "What's the funniest punishment you've ever received?", "What's your biggest 'that wasn't supposed to happen' moment?", "What's your most embarrassing autocorrect fail?", "What's the most embarrassing thing you've done for attention?", "What's the most random thing in your room?", "What's the worst accidental text?", "What's your biggest social media regret?", "What's something you've done that looked cool in your head but wasn't?", "What's your most embarrassing voice crack moment?", "What's the most awkward thing you've said to a teacher?", "What's your most embarrassing gaming rage moment?", "What's your most dramatic overreaction?", "What's your worst accidental text?", "What's the most random thing in your room?", "What's your biggest social media regret?", "What's your most embarrassing gaming rage moment?", "What's your most dramatic overreaction?"
+ ],
+                SPICY: [
+                    "Who was your first crush?", "What's the worst date you've been on?", "Have you ever liked two people at once?", "What's your biggest dating red flag?", "Have you ever sent a risky text?", "What's the most awkward romantic moment?", "Have you ever had a secret crush?", "What's the worst pickup line you've heard?", "Have you ever fallen for a friend?", "What's your biggest turn-off?", "Have you ever been friend-zoned?", "Have you ever rejected someone badly?", "What's your most embarrassing crush story?", "Have you ever flirted accidentally?", "Have you ever had a crush on a teacher?", "What's the weirdest compliment you've received?", "Have you ever liked someone everyone else disliked?", "What's your type?", "Have you ever been caught flirting?", "What's your most awkward confession story?", "Have you ever kissed someone you just met?", "Have you ever had a one night stand?", "Have you ever regretted a kiss?", "What's the most romantic thing you've done?", "Have you ever written a love letter?", "Have you ever received a love letter?", "Have you ever been on a blind date?", "Have you ever been set up on a date?", "Have you ever used a dating app?", "What's your most embarrassing dating app story?", "Have you ever catfished someone?", "Have you ever been catfished?", "Have you ever lied about your relationship status online?", "Have you ever had a long distance relationship?", "Have you ever been in an open relationship?", "Have you ever had a friends with benefits?", "Have you ever hooked up with a coworker?", "Have you ever dated someone your parents hated?", "Have you ever dated someone your friends hated?", "Have you ever dated someone much older than you?", "Have you ever dated someone much younger than you?", "Have you ever dated someone from a different country?", "Have you ever dated someone who spoke a different language?", "Have you ever dated someone with a different religion?", "Have you ever dated someone with different political views?", "Have you ever dated someone with a different lifestyle?", "Have you ever dated someone who was your complete opposite?", "Have you ever dated someone who was exactly like you?", "Have you ever fallen in love at first sight?", "Have you ever believed in love at first sight?", "Have you ever had your heart broken?", "Have you ever broken someone's heart?", "Have you ever regretted a breakup?", "Have you ever wanted to get back together with an ex?", "Have you ever stayed friends with an ex?", "Have you ever blocked an ex?", "Have you ever been blocked by an ex?", "Have you ever stalked an ex on social media?", "Have you ever been stalked by an ex on social media?", "Have you ever compared a new partner to an ex?", "Have you ever been compared to an ex?", "Have you ever talked about an ex on a first date?", "Have you ever had someone talk about their ex on a first date with you?", "Have you ever had a crush on a friend's partner?", "Have you ever had a friend have a crush on your partner?", "Have you ever been in a love triangle?", "Have you ever been the other person?", "Have you ever been cheated on?", "Have you ever cheated?", "Have you ever thought about cheating?", "Have you ever been tempted to cheat?", "Have you ever had a dream about cheating?", "Have you ever had a dream about your partner cheating?", "Have you ever been jealous of a partner's friend?", "Have you ever been jealous of a partner's family member?", "Have you ever been jealous of a partner's pet?", "Have you ever been jealous of a partner's job?", "Have you ever been jealous of a partner's hobby?", "Have you ever been jealous of a partner's success?", "Have you ever been jealous of a partner's money?", "Have you ever been jealous of a partner's looks?", "Have you ever been jealous of a partner's intelligence?", "If your last 10 searches were leaked, how cooked are you?", "What's your most questionable purchase?", "If your phone could expose one secret, what would it be?", "Who here would survive the least amount of time without Wi-Fi?", "What's the dumbest thing you've believed for years?", "What's your biggest 'I instantly regretted that' moment?", "Have you ever had a crush on someone you barely knew?", "What's the longest you've liked someone without telling them?", "What's your most awkward first impression story?", "Who here seems most likely to secretly be in love right now?", "What's your most embarrassing texting mistake?", "Have you ever sent a message and instantly regretted it?", "What's the sweetest thing someone has done for you?", "What's the biggest misunderstanding you've had with a crush?", "Have you ever changed your interests to impress someone?", "What's the most obvious hint you've completely missed?", "Who here would be the most difficult person to date?", "What's your most embarrassing compliment story?", "Have you ever been friend-zoned?", "Have you ever accidentally friend-zoned someone?", "What's something attractive that most people don't think about?", "What's your biggest dating deal-breaker?", "Have you ever liked someone your friends didn't approve of?", "What's the most awkward thing you've said while nervous?", "If you had to set up two people in this room, who would it be?", "What's your most chaotic crush story?", "Have you ever lied because you were embarrassed about liking someone?", "What's the most random thing that made you like someone?", "Who here would survive a dating reality show the longest?", "What's the most embarrassing thing you've done to get someone's attention?", "Have you ever misread a signal completely?", "What's a compliment you've never forgotten?", "Have you ever had a crush on someone everyone else found weird?", "What's the most awkward romantic situation you've ever been in?", "Who here gives off the most 'secret hopeless romantic' energy?", "What's one question you'd never want a crush to ask you?", "What's the most awkward thing you've said to a teacher?", "What's the funniest thing you've ever misheard?", "What's the weirdest rumor you've heard about yourself?"
+ ],
+                CHAOS: [
+                    "Show your most used emoji.", "Read your last search.", "Let someone choose your next profile picture.", "Speak in an accent next round.", "Swap seats with another player.", "Act like another player.", "Let the group rename you for one round.", "Speak only in questions.", "Sing your answer.", "Tell a joke immediately.", "Do your best celebrity impression.", "Dance for 5 seconds.", "Narrate your life dramatically.", "Pretend you're famous.", "Give everyone a nickname.", "Roast yourself.", "Compliment everyone.", "Speak like a robot.", "Act like you're in a movie.", "Create a fake headline about yourself.", "Do 10 pushups.", "Hold your breath for 30 seconds.", "Speak without closing your mouth.", "Talk in a whisper.", "Talk like you just ran a marathon.", "Talk like you're about to cry.", "Talk like you're incredibly angry.", "Talk like you're laughing uncontrollably.", "Talk like you're scared.", "Talk like you're confused.", "Talk like you're explaining something to a child.", "Talk like you're giving a TED talk.", "Talk like a news anchor.", "Talk like a sports commentator.", "Talk like a podcast host.", "Talk like a pirate.", "Talk like a cowboy.", "Talk like a wizard.", "Talk like a robot.", "Talk like an alien.", "Talk like a baby.", "Talk like an old person.", "Talk like a valley girl.", "Talk like a surfer.", "Talk like a gamer.", "Talk like a hippie.", "Talk like a hipster.", "Talk like a punk rocker.", "Talk like a goth.", "Talk like a prep.", "Talk like a jock.", "Talk like a nerd.", "Talk like a geek.", "Talk like a dork.", "Talk like a weirdo.", "Talk like a freak.", "Talk like a psycho.", "Talk like a clown.", "Talk like a mime.", "Talk like a statue.", "Talk like a tree.", "Talk like a rock.", "Talk like a cloud.", "Talk like a raindrop.", "Talk like a snowflake.", "Talk like a sunbeam.", "Talk like a moonbeam.", "Talk like a star.", "Talk like a planet.", "Talk like a galaxy.", "Talk like a universe.", "Talk like a black hole.", "Talk like a supernova.", "Talk like a neutron star.", "Talk like a quasar.", "Talk like a pulsar.", "Talk like a comet.", "Talk like an asteroid.", "Talk like a meteor.", "Talk like a meteorite.", "Talk like a crater.", "Talk like a mountain.", "Talk like a valley.", "Talk like a river.", "Talk like a lake.", "Talk like an ocean.", "Talk like a sea.", "Talk like a wave.", "Talk like a tide.", "Talk like a current.", "Talk like a whirlpool.", "Talk like a tsunami.", "Talk like a hurricane.", "Talk like a tornado.", "Talk like a storm.", "Talk like a rainstorm.", "Talk like a thunderstorm.", "Talk like a snowstorm.", "Talk like a blizzard.", "Let the group rename you for the next 3 rounds.", "Read your 5 most used emojis.", "Let the group choose your celebrity lookalike.", "Speak only in Gen Z slang until your next turn.", "Let another player post a fake headline about you.", "Everyone points at the most suspicious person.", "Explain your last dream dramatically.", "Let someone else choose your next username.", "Everyone gives you a nickname. You must pick one.", "Create a fake school rumor about yourself.", "If the group had roles in a heist, what would yours be?", "Everyone votes on who would survive prison the longest.", "What's the weirdest thing you've done when nobody was watching?", "If you were arrested tomorrow, what would your friends assume you did?", "Everyone gives you a nickname. You must pick one.", "What's the dumbest thing you've believed for years?", "What's your most questionable purchase?", "What's the most awkward thing you've said to a teacher?", "Tell the group your worst fashion phase.", "Who here would survive a horror movie until the very end?", "Who here would accidentally start a cult?", "What's the weirdest thing you've eaten?", "Who here would become famous for something stupid?", "Who here would spend an entire day arguing online?", "Who here would become a supervillain first?"
+ ]
+            },
+            
+            pool: [],
+            
+            init: function() {
+                this.buildPool();
+            },
+            
+            buildPool: function() {
+                this.pool = [];
+                const cats = ['FRIENDS', 'DEEP', 'CONFESSION', 'SPICY', 'CHAOS'];
+                for (let key in this.database) {
+                    if (cats.includes(key)) {
+                        const tagged = this.database[key].map(t => ({ text: t, category: key }));
+                        this.pool = this.pool.concat(tagged);
+                    }
+                }
+                this.shuffle(this.pool);
+            },
+            
+            shuffle: function(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+            },
+            
+            getNext: function() {
+                if (this.pool.length === 0) {
+                    this.buildPool();
+                    if (this.pool.length === 0) return { text: "No questions available!", category: "System" };
+                }
+                return this.pool.pop();
+            }
+        };
+
+        /* ==========================================================================
+           SETTINGS SYSTEM
+           ========================================================================== */
+        const SettingsSystem = {
+            data: {
+                length: 20,
+                timer: 0,
+                difficulty: 'Casual',
+                sound: true,
+                bombs: true,
+                powers: true,
+                stats: true
+            },
+            
+            setLength: (val, btn) => {
+                SettingsSystem.data.length = val;
+                SettingsSystem.updateUI(btn, 'settings-length');
+            },
+            setTimer: (val, btn) => {
+                SettingsSystem.data.timer = val;
+                SettingsSystem.updateUI(btn, 'settings-timer');
+            },
+            setDiff: (val, btn) => {
+                SettingsSystem.data.difficulty = val;
+                SettingsSystem.updateUI(btn, 'settings-diff');
+            },
+            updateUI: (btn, parentId) => {
+                document.querySelectorAll(`#${parentId} .toggle-btn`).forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            },
+        };
+
+        /* ==========================================================================
+           GAME SYSTEM
+           ========================================================================== */
+        const GameSystem = {
+            players: [], 
+            currentPlayerIndex: 0,
+            round: 1,
+            timerInterval: null,
+            isPaused: false,
+            currentPrompt: null,
+            activeModifier: null, 
+            
+            goToStart: () => {
+                AudioSystem.click();
+                UISystem.showScreen('screen-start');
+            },
+            
+            goToSettings: () => {
+                AudioSystem.init(); 
+                AudioSystem.click();
+                UISystem.showScreen('screen-settings');
+            },
+
+            goToPlayerSetup: () => {
+                AudioSystem.click();
+                UISystem.showScreen('screen-setup');
+                GameSystem.renderPlayerList();
+            },
+
+            /* --- PLAYER MANAGEMENT --- */
+            addPlayer: () => {
+                const input = document.getElementById('input-player-name');
+                const name = input.value.trim();
+                if (name && GameSystem.players.length < 20) {
+                    GameSystem.players.push({ 
+                        name: name, score: 0, truths: 0, lies: 0, passes: 0, streak: 0, bestStreak: 0 
+                    });
+                    input.value = '';
+                    input.focus(); 
+                    GameSystem.renderPlayerList();
+                    AudioSystem.click();
+                }
+            },
+
+            removePlayer: (index) => {
+                GameSystem.players.splice(index, 1);
+                GameSystem.renderPlayerList();
+                AudioSystem.click();
+            },
+
+            movePlayer: (index, dir) => {
+                if (dir === -1 && index > 0) {
+                    [GameSystem.players[index], GameSystem.players[index-1]] = [GameSystem.players[index-1], GameSystem.players[index]];
+                } else if (dir === 1 && index < GameSystem.players.length - 1) {
+                    [GameSystem.players[index], GameSystem.players[index+1]] = [GameSystem.players[index+1], GameSystem.players[index]];
+                }
+                GameSystem.renderPlayerList();
+            },
+
+            renderPlayerList: () => {
+                const container = document.getElementById('player-list-container');
+                container.innerHTML = '';
+                GameSystem.players.forEach((p, i) => {
+                    const div = document.createElement('div');
+                    div.className = 'player-chip';
+                    div.innerHTML = `
+                        <span style="max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${p.name}</span>
+                        <div class="player-chip-controls">
+                            <button class="btn-icon" onclick="GameSystem.movePlayer(${i}, -1)">←</button>
+                            <button class="btn-icon" onclick="GameSystem.movePlayer(${i}, 1)">→</button>
+                            <button class="btn-icon" onclick="GameSystem.removePlayer(${i})" style="color:var(--danger)">×</button>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+                document.getElementById('btn-start-match').disabled = GameSystem.players.length < 2;
+            },
+
+            /* --- MATCH CONTROL --- */
+            startMatch: () => {
+                if (GameSystem.players.length < 2) return;
+                AudioSystem.start();
+                PromptSystem.init();
+                GameSystem.round = 1;
+                GameSystem.currentPlayerIndex = 0;
+                GameSystem.players.forEach(p => {
+                    p.score = 0; p.truths = 0; p.lies = 0; p.passes = 0; p.streak = 0; p.bestStreak = 0;
+                });
+                
+                document.getElementById('total-rounds').innerText = SettingsSystem.data.length > 100 ? '∞' : SettingsSystem.data.length;
+                GameSystem.nextTurn();
+            },
+
+            nextTurn: () => {
+                if (GameSystem.round > SettingsSystem.data.length) {
+                    GameSystem.endGame();
+                    return;
+                }
+                const p = GameSystem.players[GameSystem.currentPlayerIndex];
+                
+                document.getElementById('next-player-name').innerText = p.name;
+                document.getElementById('round-counter').innerText = GameSystem.round;
+                UISystem.updateStreakBadge(p.streak);
+                UISystem.toggleModal('overlay-turn', true);
+            },
+
+            startTurn: () => {
+                AudioSystem.click();
+                UISystem.toggleModal('overlay-turn', false);
+                UISystem.showScreen('screen-game');
+                
+                GameSystem.activeModifier = null;
+
+                if (Math.random() < 0.15) { 
+                    if (Math.random() > 0.5 && SettingsSystem.data.bombs) {
+                        GameSystem.triggerBomb();
+                        return;
+                    } else if (SettingsSystem.data.powers) {
+                        GameSystem.triggerPower();
+                        return;
+                    }
+                }
+                
+                GameSystem.loadPrompt();
+            },
+
+            /* --- PROMPT & TIMER --- */
+            loadPrompt: () => {
+                if (!PromptSystem || typeof PromptSystem.getNext !== 'function') {
+                    console.error("PromptSystem not loaded");
+                    return;
+                }
+
+                GameSystem.currentPrompt = PromptSystem.getNext();
+                
+                const text = GameSystem.currentPrompt ? GameSystem.currentPrompt.text : "Error loading question";
+                const category = GameSystem.currentPrompt ? GameSystem.currentPrompt.category : "System";
+
+                const cardEl = document.getElementById('card-category');
+                const textEl = document.getElementById('card-text');
+                const card = document.getElementById('prompt-card');
+
+                if (cardEl) cardEl.innerText = category;
+                if (textEl) textEl.innerText = text;
+                
+                card.classList.remove('urgent-mode');
+                card.classList.add('fade-in'); 
+                setTimeout(() => card.classList.remove('fade-in'), 500);
+
+                GameSystem.startTimer();
+            },
+
+            startTimer: () => {
+                const duration = SettingsSystem.data.timer;
+                const bar = document.getElementById('timer-bar');
+                const num = document.getElementById('countdown-number');
+                
+                clearInterval(GameSystem.timerInterval);
+                bar.style.width = '100%';
+                bar.classList.remove('urgent');
+                num.style.display = 'none';
+
+                if (duration === 0) return;
+
+                let timeLeft = duration;
+                
+                GameSystem.timerInterval = setInterval(() => {
+                    timeLeft--;
+                    const pct = (timeLeft / duration) * 100;
+                    bar.style.width = `${pct}%`;
+
+                    if (timeLeft <= 5) {
+                        bar.classList.add('urgent');
+                        document.getElementById('prompt-card').classList.add('urgent-mode');
+                        num.innerText = timeLeft;
+                        num.style.display = 'block';
+                        if(timeLeft > 0) AudioSystem.tick();
+                    }
+
+                    if (timeLeft <= 0) {
+                        GameSystem.timeOut();
+                    }
+                }, 1000);
+            },
+
+            timeOut: () => {
+                clearInterval(GameSystem.timerInterval);
+                AudioSystem.alarm();
+                GameSystem.actionPass(true);
+            },
+
+            /* --- ACTIONS --- */
+            actionPass: (auto = false) => {
+                clearInterval(GameSystem.timerInterval);
+                const p = GameSystem.players[GameSystem.currentPlayerIndex];
+                
+                if (GameSystem.activeModifier === 'immunity' && !auto) {
+                    GameSystem.activeModifier = null; 
+                    GameSystem.finishTurn();
+                    return;
+                }
+
+                p.score -= 1;
+                p.passes++;
+                p.streak = 0;
+
+                const penalties = [
+                    "Do 5 pushups.", "Speak in an accent for 2 rounds.", 
+                    "Show your search history.", "Let the group send a text from your phone.",
+                    "Drink a mystery mix.", "Lose 2 more points."
+                ];
+                document.getElementById('penalty-text').innerText = penalties[Math.floor(Math.random() * penalties.length)];
+                UISystem.toggleModal('overlay-penalty', true);
+            },
+
+            actionConfess: () => {
+                clearInterval(GameSystem.timerInterval);
+                document.getElementById('prompt-card').classList.remove('urgent-mode');
+                UISystem.toggleModal('overlay-vote', true);
+            },
+
+            resolveTruth: (believed) => {
+                UISystem.toggleModal('overlay-vote', false);
+                const p = GameSystem.players[GameSystem.currentPlayerIndex];
+                
+                let points = believed ? 2 : -2;
+                
+                if (GameSystem.activeModifier === 'double') points *= 2;
+                if (GameSystem.activeModifier === 'triple') points *= 3;
+
+                if (believed) {
+                    p.score += points;
+                    p.truths++;
+                    p.streak++;
+                    if (p.streak > p.bestStreak) p.bestStreak = p.streak;
+                    GameSystem.checkStreakBonuses(p);
+                    AudioSystem.success();
+                } else {
+                    p.score += points;
+                    p.lies++;
+                    p.streak = 0;
+                    AudioSystem.fail();
+                }
+                
+                GameSystem.activeModifier = null;
+                GameSystem.finishTurn();
+            },
+
+            checkStreakBonuses: (p) => {
+                let bonus = 0;
+                let title = "";
+                if (p.streak === 3) { bonus = 2; title = "ON FIRE!"; }
+                else if (p.streak === 5) { bonus = 5; title = "LEGENDARY!"; }
+                else if (p.streak === 10) { bonus = 10; title = "GOD MODE!"; }
+
+                if (bonus > 0) {
+                    p.score += bonus;
+                    document.getElementById('streak-title').innerText = title;
+                    document.getElementById('streak-desc').innerText = `+${bonus} Bonus Points!`;
+                    UISystem.toggleModal('overlay-streak', true);
+                }
+            },
+
+            finishTurn: () => {
+                UISystem.toggleModal('overlay-penalty', false);
+                GameSystem.round++;
+                GameSystem.currentPlayerIndex = (GameSystem.currentPlayerIndex + 1) % GameSystem.players.length;
+                GameSystem.nextTurn();
+            },
+
+            /* --- MODIFIERS --- */
+            triggerPower: () => {
+                const powers = [
+                    { name: "Double Next Truth", effect: "double" },
+                    { name: "Immunity from Next Pass", effect: "immunity" },
+                    { name: "Steal 2 from Next Player", effect: "steal" },
+                    { name: "Force Another Player to Answer", effect: "force" }
+                ];
+                const pow = powers[Math.floor(Math.random() * powers.length)];
+                document.getElementById('power-text').innerText = pow.name;
+                
+                if (pow.effect === 'steal') {
+                    const me = GameSystem.players[GameSystem.currentPlayerIndex];
+                    const next = GameSystem.players[(GameSystem.currentPlayerIndex + 1) % GameSystem.players.length];
+                    me.score += 2;
+                    next.score -= 2;
+                } else if (pow.effect === 'force') {
+                    GameSystem.currentPlayerIndex = (GameSystem.currentPlayerIndex + 1) % GameSystem.players.length;
+                } else {
+                    GameSystem.activeModifier = pow.effect;
+                }
+                
+                UISystem.toggleModal('overlay-power', true);
+            },
+
+            triggerBomb: () => {
+                const bombs = [
+                    { name: "Double Points Round", effect: "double" },
+                    { name: "Triple Or Nothing", effect: "triple" },
+                    { name: "Swap Scores!", action: "swap" },
+                    { name: "Reverse Scores!", action: "reverse" },
+                    { name: "Everyone -1 Point", action: "all_minus_1" }
+                ];
+                const bomb = bombs[Math.floor(Math.random() * bombs.length)];
+                document.getElementById('bomb-text').innerText = bomb.name;
+                GameSystem.pendingBomb = bomb; 
+                UISystem.toggleModal('overlay-bomb', true);
+            },
+
+            acceptBomb: () => {
+                UISystem.toggleModal('overlay-bomb', false);
+                const bomb = GameSystem.pendingBomb;
+                
+                if (bomb.action === 'swap') {
+                    const scores = GameSystem.players.map(p => p.score);
+                    GameSystem.shuffle(scores);
+                    GameSystem.players.forEach((p, i) => p.score = scores[i]);
+                } else if (bomb.action === 'reverse') {
+                    const scores = GameSystem.players.map(p => p.score).reverse();
+                    GameSystem.players.forEach((p, i) => p.score = scores[i]);
+                } else if (bomb.action === 'all_minus_1') {
+                    GameSystem.players.forEach(p => p.score -= 1);
+                } else {
+                    GameSystem.activeModifier = bomb.effect;
+                }
+                
+                GameSystem.loadPrompt();
+            },
+
+            /* --- END GAME --- */
+            endGame: () => {
+                UISystem.showScreen('screen-winner');
+                
+                const scoreSorted = [...GameSystem.players].sort((a,b) => b.score - a.score);
+                
+                const winner = scoreSorted[0];
+                document.getElementById('winner-name').innerText = winner.name;
+                document.getElementById('end-score').innerText = winner.score;
+                
+                const mostHonest = [...GameSystem.players].sort((a,b) => b.truths - a.truths)[0];
+                const biggestLiar = [...GameSystem.players].sort((a,b) => b.lies - a.lies)[0];
+                const bestStreak = [...GameSystem.players].sort((a,b) => b.bestStreak - a.bestStreak)[0];
+                
+                document.getElementById('end-streak').innerText = winner.bestStreak;
+
+                const pod = document.getElementById('podium-list');
+                pod.innerHTML = '';
+                scoreSorted.forEach((p, i) => {
+                    const row = document.createElement('div');
+                    row.className = 'podium-row';
+                    const rankDisplay = i===0 ? '🏆' : (i===1 ? '🥈' : (i===2 ? '🥉' : (i+1) + '.'));
+                    
+                    row.innerHTML = `
+                        <span class="rank-icon">${rankDisplay}</span>
+                        <span class="player-name">${p.name}</span>
+                        <span class="player-score">${p.score}</span>
+                    `;
+                    pod.appendChild(row);
+                });
+
+                if (SettingsSystem.data.stats) {
+                    StorageSystem.update({
+                        highScore: winner.score,
+                        bestStreak: bestStreak.bestStreak,
+                        mostHonest: mostHonest.name,
+                        biggestLiar: biggestLiar.name
+                    });
+                }
+            },
+
+            rematch: () => {
+                AudioSystem.click();
+                GameSystem.startMatch();
+            },
+            
+            showGlobalStats: () => {
+                AudioSystem.click();
+                UISystem.showScreen('screen-stats');
+                const s = StorageSystem.get();
+                document.getElementById('global-stats-content').innerHTML = `
+                    <div class="stats-grid">
+                        <div class="stat-box"><span class="stat-val">${s.games}</span><span class="stat-label">Games</span></div>
+                        <div class="stat-box"><span class="stat-val">${s.totalScore}</span><span class="stat-label">High Score</span></div>
+                        <div class="stat-box"><span class="stat-val">${s.longestStreak}</span><span class="stat-label">Streak</span></div>
+                        <div class="stat-box"><span class="stat-val">${s.mostHonest}</span><span class="stat-label">Honest</span></div>
+                    </div>
+                `;
+            }
+        };
+
+        /* ==========================================================================
+           UI SYSTEM
+           ========================================================================== */
+        const UISystem = {
+            showScreen: (id) => {
+                document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+                document.querySelectorAll('.overlay').forEach(o => o.classList.add('hidden'));
+                document.getElementById(id).classList.remove('hidden');
+            },
+            toggleModal: (id, show) => {
+                const el = document.getElementById(id);
+                if (show) el.classList.remove('hidden');
+                else el.classList.add('hidden');
+            },
+            closeModal: (id) => {
+                document.getElementById(id).classList.add('hidden');
+            },
+            toggleHowToPlay: () => {
+                AudioSystem.click();
+                const el = document.getElementById('overlay-howtoplay');
+                if (el.classList.contains('hidden')) {
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
+            },
+            updateStreakBadge: (count) => {
+                const el = document.getElementById('streak-display');
+                if (count > 1) {
+                    el.innerText = `🔥 ${count}`;
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            },
+            toggleScoreboard: () => {
+                AudioSystem.click();
+                const list = document.getElementById('scoreboard-list');
+                const overlay = document.getElementById('overlay-scoreboard');
+                
+                if (overlay.classList.contains('hidden')) {
+                    list.innerHTML = '';
+                    const sorted = [...GameSystem.players].sort((a,b) => b.score - a.score);
+                    sorted.forEach(p => {
+                        const div = document.createElement('div');
+                        div.className = 'podium-row';
+                        div.innerHTML = `
+                            <span class="player-name">${p.name}</span>
+                            <span class="player-score">${p.score}</span>
+                        `;
+                        list.appendChild(div);
+                    });
+                    overlay.classList.remove('hidden');
+                } else {
+                    overlay.classList.add('hidden');
+                }
+            }
+        };
+
+        window.onload = () => {
+            UISystem.showScreen('screen-start');
+        };
+
+        // Input enter key listener
+        document.getElementById('input-player-name').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                GameSystem.addPlayer();
+            }
+        });
+
+    </script>
+</body>
+</html>
+```
