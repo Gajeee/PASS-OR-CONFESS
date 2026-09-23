@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="color-scheme" content="light only">
     <title>PASS OR CONFESS — Slush Edition</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,6 +34,11 @@
             --radius-sticker: 16px;
         }
 
+        html {
+            color-scheme: light only;
+            height: 100%;
+        }
+
         * { 
             box-sizing: border-box; 
             margin: 0; 
@@ -47,10 +53,15 @@
             background-color: var(--color-sky-wash);
             color: var(--color-carbon);
             height: 100vh;
+            height: 100dvh;
             width: 100vw;
             overflow: hidden;
             display: flex;
             flex-direction: column;
+        }
+
+        button, input {
+            color-scheme: light only;
         }
 
         /* Marquee Bar */
@@ -102,6 +113,7 @@
             overflow-y: auto; position: relative; z-index: 10; 
             max-width: 500px; width: 100%; margin: 0 auto;
             justify-content: center;
+            min-height: 0;
         }
         .screen.hidden { display: none !important; }
 
@@ -116,6 +128,8 @@
 
         /* Interactive Controls */
         button {
+            -webkit-appearance: none;
+            appearance: none;
             border: 1px solid var(--color-carbon);
             outline: none; cursor: pointer; font-family: inherit;
             transition: transform 0.05s ease, background-color 0.15s ease;
